@@ -2,7 +2,8 @@
 cd /home/container || exit 1
 
 if [ ! -x ./xash ] || [ ! -d ./public ]; then
-    echo "Game files missing in /home/container - reinstall the server from the panel."
+    echo "Game files missing in /home/container (xash executable: $([ -x ./xash ] && echo yes || echo no), public dir: $([ -d ./public ] && echo yes || echo no), running as uid $(id -u)) - reinstall the server from the panel."
+    ls -la /home/container
     exit 1
 fi
 
