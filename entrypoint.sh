@@ -2,10 +2,13 @@
 cd /home/container || exit 1
 
 if [ ! -x ./xash ] || [ ! -d ./public ]; then
-    echo "Game files missing in /home/container (xash executable: $([ -x ./xash ] && echo yes || echo no), public dir: $([ -d ./public ] && echo yes || echo no), running as uid $(id -u)) - reinstall the server from the panel."
-    ls -la /home/container
-    exit 1
+    echo "First start: copying game files from the image into /home/container (can take a minute)..."
+    if ! cp -a /xashds/. /home/container/ || [ ! -x ./xash ]; then
+        echo "Copy failed (uid $(id -u)):"; ls -la /home/container; df -h /home/container
+        exit 1
+    fi
 fi
+grep -q ' /home/container ' /proc/self/mountinfo || echo "NOTE: /home/container is not a mounted volume, so files will not persist across restarts."
 
 # Browsers connect to the WebRTC UDP port on this IP, so it must be the *public* one.
 valid_ip() { [[ "$1" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; }
