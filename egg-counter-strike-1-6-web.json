@@ -23,9 +23,9 @@
     },
     "scripts": {
         "installation": {
-            "script": "#!/bin/bash\nset -e\n# Game files ship inside the image (/xashds); copy them into the server volume.\nmkdir -p /mnt/server\ncp -a /xashds/. /mnt/server/\nchmod +x /mnt/server/xash\necho \"install complete\"\n",
-            "container": "ghcr.io/marixoncrack/cs16-web-pelican:latest",
-            "entrypoint": "bash"
+            "script": "#!/bin/ash\necho \"Nothing to install: game files are copied from the image on first start.\"\nexit 0\n",
+            "container": "ghcr.io/parkervcp/installers:alpine",
+            "entrypoint": "ash"
         }
     },
     "variables": [
