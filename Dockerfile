@@ -13,7 +13,7 @@ RUN apt-get update \
 ENV HOME=/home/container USER=container \
     XASH3D_BASEDIR=/home/container LD_LIBRARY_PATH=/home/container
 
-USER container
+# No USER line: the egg's install script must run as root, and Wings sets the runtime user itself.
 WORKDIR /home/container
 COPY --chmod=755 entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/usr/bin/tini", "-g", "--", "/bin/bash", "/entrypoint.sh"]
