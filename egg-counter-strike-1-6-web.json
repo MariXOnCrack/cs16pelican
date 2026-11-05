@@ -1,0 +1,66 @@
+{
+    "_comment": "Counter-Strike 1.6 Web Server (play in the browser) - based on https://github.com/balintsoos/cs16-web-server",
+    "meta": {
+        "version": "PTDL_v2",
+        "update_url": null
+    },
+    "exported_at": "2026-11-05T00:00:00+00:00",
+    "name": "Counter-Strike 1.6 Web Server",
+    "author": "mailbox.marix@gmail.com",
+    "uuid": "3f6c1d52-8b0e-4c59-9a3e-6d1f7b2a4e90",
+    "description": "Counter-Strike 1.6 dedicated server (Xash3D FWGS) that players join straight from a web browser via WebRTC. Allocate TCP+UDP port 27016 as the primary allocation and open http://IP:27016.",
+    "features": null,
+    "docker_images": {
+        "CS 1.6 Web": "ghcr.io/marixoncrack/cs16-web-pelican:latest"
+    },
+    "file_denylist": [],
+    "startup": "./xash +ip 0.0.0.0 -port 27015 -game cstrike +map {{MAP}} +maxplayers {{MAX_PLAYERS}}",
+    "config": {
+        "files": "{}",
+        "startup": "{\"done\": \"Starting CS 1.6 web server\"}",
+        "logs": "{}",
+        "stop": "^C"
+    },
+    "scripts": {
+        "installation": {
+            "script": "#!/bin/bash\nset -e\n# Game files ship inside the image (/xashds); copy them into the server volume.\nmkdir -p /mnt/server\ncp -a /xashds/. /mnt/server/\nchmod +x /mnt/server/xash\necho \"install complete\"\n",
+            "container": "ghcr.io/marixoncrack/cs16-web-pelican:latest",
+            "entrypoint": "bash"
+        }
+    },
+    "variables": [
+        {
+            "name": "Map",
+            "description": "Starting map.",
+            "env_variable": "MAP",
+            "default_value": "de_dust2",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|string|regex:/^[A-Za-z0-9_]+$/|max:64",
+            "sort": null,
+            "field_type": "text"
+        },
+        {
+            "name": "Max players",
+            "description": "Maximum number of players (1-32).",
+            "env_variable": "MAX_PLAYERS",
+            "default_value": "14",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "required|integer|between:1,32",
+            "sort": null,
+            "field_type": "text"
+        },
+        {
+            "name": "Public IP",
+            "description": "Public IPv4 address browsers use to reach this server (WebRTC). Leave empty to auto-detect.",
+            "env_variable": "PUBLIC_IP",
+            "default_value": "",
+            "user_viewable": true,
+            "user_editable": true,
+            "rules": "nullable|ipv4",
+            "sort": null,
+            "field_type": "text"
+        }
+    ]
+}
