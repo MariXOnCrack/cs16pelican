@@ -32,6 +32,13 @@ export PORT="${SERVER_PORT}"
 
 echo "Starting CS 1.6 web server (web UI: tcp/${SERVER_PORT}, webrtc: udp/${PORT}, public ip: ${IP:-unknown})"
 
+# The SFU binds every interface address at launch; a fresh IPv6 link-local address is unusable
+# (flag 0x40 = tentative) until duplicate-address detection ends, which makes the bind panic.
+tentative() { local a i p s f n; while read -r a i p s f n; do (( 0x$f & 0x40 )) && return 0; done < /proc/net/if_inet6; return 1; }
+if [ -r /proc/net/if_inet6 ]; then
+    for _ in $(seq 40); do tentative || break; sleep 0.5; done
+fi
+
 MODIFIED_STARTUP=$(eval echo "$(echo "${STARTUP}" | sed -e 's/{{/${/g' -e 's/}}/}/g')")
 echo ":/home/container$ ${MODIFIED_STARTUP}"
 exec ${MODIFIED_STARTUP}
